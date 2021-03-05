@@ -148,6 +148,14 @@ private:
      * @return Message read
      */
     Message *ReadInQueue(RT_QUEUE *queue);
+    
+    
+    /**
+     * Read a message from a given queue, block if empty
+     * @param queue Queue identifier
+     * @return Message read
+     */
+    void Get_Battery_Level();
 
 };
 

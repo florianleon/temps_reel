@@ -415,3 +415,19 @@ Message *Tasks::ReadInQueue(RT_QUEUE *queue) {
     return msg;
 }
 
+void Tasks::Get_Battery_Level(){
+    Message retour;
+    //retour = ComRobot.write(DMB_GET_VB);
+    retour = ComRobot.GetBattery();
+    
+    std::cout << retour;
+    
+    //traitement
+    
+       
+    //envoie
+    MessageBattery msg = MessageBattery(MESSAGE_ROBOT_BATTERY_LEVEL, retour);
+    ComMonitor.write(&msg);
+    
+    
+}
