@@ -17,6 +17,7 @@
 
 #include "tasks.h"
 #include <stdexcept>
+#include <stdlib.h>
 
 // Déclaration des priorités des taches
 #define PRIORITY_TSERVER 30
@@ -418,16 +419,16 @@ Message *Tasks::ReadInQueue(RT_QUEUE *queue) {
 void Tasks::Get_Battery_Level(){
     Message retour;
     //retour = ComRobot.write(DMB_GET_VB);
-    retour = ComRobot.GetBattery();
+    retour = ComRobot::GetBattery();
     
-    std::cout << retour;
+    std::cout << retour.ToString();
     
     //traitement
     
        
     //envoie
-    MessageBattery msg = MessageBattery(MESSAGE_ROBOT_BATTERY_LEVEL, retour);
-    ComMonitor.write(&msg);
+    Message msg = MessageBattery(MESSAGE_ROBOT_BATTERY_LEVEL, retour);
+    ComMonitor.Write(&msg);
     
     
 }
