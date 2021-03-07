@@ -423,7 +423,7 @@ void Tasks::Get_Battery_Level(){
     
     std::cout << retour.ToString();
     
-    //traitement
+    //traitement b
     
        
     //envoie
