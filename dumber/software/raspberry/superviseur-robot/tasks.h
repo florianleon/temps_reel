@@ -64,6 +64,7 @@ private:
     /**********************************************************************/
     ComMonitor monitor;
     ComRobot robot;
+    Camera cam;
     int robotStarted = 0;
     int move = MESSAGE_ROBOT_STOP;
     
@@ -77,6 +78,8 @@ private:
     RT_TASK th_startRobot;
     RT_TASK th_move;
     RT_TASK th_battery;
+    RT_TASK th_openCamera;
+    RT_TASK th_img;
     
     /**********************************************************************/
     /* Mutex                                                              */
@@ -85,6 +88,8 @@ private:
     RT_MUTEX mutex_robot;
     RT_MUTEX mutex_robotStarted;
     RT_MUTEX mutex_move;
+    RT_MUTEX mutex_camera;
+    RT_MUTEX mutex_cameraStarted;
 
     /**********************************************************************/
     /* Semaphores                                                         */
@@ -93,6 +98,7 @@ private:
     RT_SEM sem_openComRobot;
     RT_SEM sem_serverOk;
     RT_SEM sem_startRobot;
+    RT_SEM sem_openCamera;
 
     /**********************************************************************/
     /* Message queues                                                     */
@@ -157,7 +163,10 @@ private:
      * @return Message read
      */
     void GetBatteryLevel(void *arg);
-
+    
+    void OpenCamera(void *arg);
+    
+    void GetImgCam(void *arg);
 };
 
 #endif // __TASKS_H__ 
