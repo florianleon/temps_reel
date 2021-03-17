@@ -31,6 +31,8 @@
 #define PRIORITY_TOPENCAMERA 20
 #define PRIORITY_TIMG 21
 
+int cptWithoutWD = 0;
+
 /*
  * Some remarks:
  * 1- This program is mostly a template. It shows you how to create tasks, semaphore
@@ -74,6 +76,10 @@ void Tasks::Init() {
         exit(EXIT_FAILURE);
     }
     if (err = rt_mutex_create(&mutex_move, NULL)) {
+        cerr << "Error mutex create: " << strerror(-err) << endl << flush;
+        exit(EXIT_FAILURE);
+    } 
+    if (err = rt_mutex_create(&mutex_cptWithoutWD, NULL)) {
         cerr << "Error mutex create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
@@ -375,6 +381,8 @@ void Tasks::StartRobotTask(void *arg) {
         cout << "Start robot without watchdog (";
         rt_mutex_acquire(&mutex_robot, TM_INFINITE);
         msgSend = robot.Write(robot.StartWithoutWD());
+        //lancer fonction StartRobotWithoutWD
+        
         rt_mutex_release(&mutex_robot);
         cout << msgSend->GetID();
         cout << ")" << endl;
@@ -419,8 +427,11 @@ void Tasks::MoveTask(void *arg) {
             cout << " move: " << cpMove;
             
             rt_mutex_acquire(&mutex_robot, TM_INFINITE);
-            robot.Write(new Message((MessageID)cpMove));
+            Message * ret = robot.Write(new Message((MessageID)cpMove));
             rt_mutex_release(&mutex_robot);
+
+            CheckRobotWithoutWD(ret->GetID());
+            
         }
         cout << endl << flush;
     }
@@ -471,7 +482,6 @@ void Tasks::GetBatteryLevel(void *arg){
     /* The task starts here                                                               */
     /**************************************************************************************/
     rt_task_set_periodic(NULL, TM_NOW, 500000000);
-
     while (1) {
         rt_task_wait_period(NULL);
         rt_mutex_acquire(&mutex_robotStarted, TM_INFINITE);
@@ -481,6 +491,7 @@ void Tasks::GetBatteryLevel(void *arg){
             rt_mutex_acquire(&mutex_robot, TM_INFINITE);
             level = (MessageBattery*) robot.Write(new Message(MESSAGE_ROBOT_BATTERY_GET));
             rt_mutex_release(&mutex_robot);
+            CheckRobotWithoutWD(level->GetID());
             rt_mutex_acquire(&mutex_monitor, TM_INFINITE);
             monitor.Write(level);
             rt_mutex_release(&mutex_monitor);
@@ -559,4 +570,29 @@ void Tasks::GetImgCam(void *arg) {
     }
 
     
+}
+
+void Tasks::CheckRobotWithoutWD(MessageID msgID) {
+
+    rt_mutex_acquire(&mutex_cptWithoutWD, TM_INFINITE);
+    if (msgID != MESSAGE_ANSWER_NACK || msgID != MESSAGE_ANSWER_ROBOT_TIMEOUT || msgID != MESSAGE_ANSWER_ROBOT_UNKNOWN_COMMAND || msgID != MESSAGE_ANSWER_ROBOT_ERROR|| msgID != MESSAGE_ANSWER_COM_ERROR) {
+        cptWithoutWD = 0;
+        //cout << "MSG OK\n" << endl << flush;
+    } else {
+        cptWithoutWD += 1;
+        cout << msgID << " : " << "Err MSG \n" << endl << flush;
+    }
+    if (cptWithoutWD > 3) {
+        rt_mutex_acquire(&mutex_monitor, TM_INFINITE);
+        monitor.Write(new Message(MESSAGE_MONITOR_LOST));
+        rt_mutex_release(&mutex_monitor);
+
+        rt_mutex_acquire(&mutex_robot, TM_INFINITE);
+        robot.Close();
+        //robot.StartWithoutWD();
+        cout << "Kill -9 robot \n" << endl << flush;
+        rt_mutex_release(&mutex_robot);
+        cptWithoutWD = 0;
+    }
+    rt_mutex_release(&mutex_cptWithoutWD);
 }

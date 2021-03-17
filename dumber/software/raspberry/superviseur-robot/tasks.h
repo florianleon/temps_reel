@@ -90,6 +90,7 @@ private:
     RT_MUTEX mutex_move;
     RT_MUTEX mutex_camera;
     RT_MUTEX mutex_cameraStarted;
+    RT_MUTEX mutex_cptWithoutWD;
 
     /**********************************************************************/
     /* Semaphores                                                         */
@@ -167,6 +168,8 @@ private:
     void OpenCamera(void *arg);
     
     void GetImgCam(void *arg);
+    
+    void CheckRobotWithoutWD(MessageID msgID);
 };
 
 #endif // __TASKS_H__ 
