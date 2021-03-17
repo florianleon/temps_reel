@@ -80,6 +80,7 @@ private:
     RT_TASK th_battery;
     RT_TASK th_openCamera;
     RT_TASK th_img;
+    RT_TASK th_checkWD;
     
     /**********************************************************************/
     /* Mutex                                                              */
@@ -170,6 +171,8 @@ private:
     void GetImgCam(void *arg);
     
     void CheckRobotWithoutWD(MessageID msgID);
+    
+    void CheckRobotWithWD(void *arg);
 };
 
 #endif // __TASKS_H__ 
