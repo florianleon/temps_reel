@@ -3,5 +3,5 @@
 #
 # NOCDDL
 #
-# Debug__PC_ configuration
 # Debug__RPI_ configuration
+# Debug__PC_ configuration

@@ -77,6 +77,7 @@ void Tasks::Init() {
         cerr << "Error mutex create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    /*
     if (err = rt_mutex_create(&mutex_cameraStarted, NULL)) {
         cerr << "Error mutex create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
@@ -85,6 +86,7 @@ void Tasks::Init() {
         cerr << "Error mutex create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    */
     cout << "Mutexes created successfully" << endl << flush;
 
     /**************************************************************************************/
@@ -106,10 +108,12 @@ void Tasks::Init() {
         cerr << "Error semaphore create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    /*
     if (err = rt_sem_create(&sem_openCamera, NULL, 0, S_FIFO)) {
         cerr << "Error semaphore create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    */
     cout << "Semaphores created successfully" << endl << flush;
 
     /**************************************************************************************/
@@ -143,6 +147,7 @@ void Tasks::Init() {
         cerr << "Error task create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    /*
     if (err = rt_task_create(&th_openCamera, "th_openCamera", 0, PRIORITY_TOPENCAMERA, 0)) {
         cerr << "Error task create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
@@ -151,6 +156,7 @@ void Tasks::Init() {
         cerr << "Error task create: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    */
     cout << "Tasks created successfully" << endl << flush;
 
     /**************************************************************************************/
@@ -199,10 +205,12 @@ void Tasks::Run() {
         cerr << "Error task start: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    /*
     if (err = rt_task_start(&th_openCamera, (void(*)(void*)) & Tasks::OpenCamera, this)) {
         cerr << "Error task start: " << strerror(-err) << endl << flush;
         exit(EXIT_FAILURE);
     }
+    */
     cout << "Tasks launched" << endl << flush;
 }
 
@@ -212,7 +220,7 @@ void Tasks::Run() {
 void Tasks::Stop() {
     monitor.Close();
     robot.Close();
-    cam.Close();
+    //cam.Close();
 }
 
 /**
