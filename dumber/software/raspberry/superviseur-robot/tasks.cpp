@@ -320,7 +320,12 @@ void Tasks::ReceiveFromMonTask(void *arg) {
 
         if (msgRcv->CompareID(MESSAGE_MONITOR_LOST)) {
             delete(msgRcv);
-            exit(-1);
+            cout << "Connexion lost with monitor !\n";
+            robot.Stop(); //arrete le robot
+            robot.Close(); //ferme la communication
+            monitor.Close(); //arrete le serveur
+            cam.Close(); //Arrete la camera
+            break;
         } else if (msgRcv->CompareID(MESSAGE_ROBOT_COM_OPEN)) {
             rt_sem_v(&sem_openComRobot);
         } else if (msgRcv->CompareID(MESSAGE_CAM_OPEN)) {
@@ -642,6 +647,7 @@ void Tasks::CheckRobotWithoutWD(MessageID msgID) {
 
         rt_mutex_acquire(&mutex_robot, TM_INFINITE);
         robot.Close();
+        robot.Open();
         robot.StartWithoutWD();
         cout << "Kill -9 robot \n" << endl << flush;
         rt_mutex_release(&mutex_robot);
